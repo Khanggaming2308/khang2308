@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thiệp bí mật</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      width: 400px;
+      padding: 20px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card h1 {
+      font-size: 24px;
+      color: #333;
+    }
+    .card textarea {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+      resize: none;
+    }
+    .card button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #ff6f61;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .card button:hover {
+      background-color: #e64e40;
+    }
+    .card p {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #555;
+    }
+    .admin-panel {
+      display: none; /* Chỉ hiện khi bạn nhấn nút xem */
+      width: 400px;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .admin-panel h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .admin-panel ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .admin-panel li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      font-size: 16px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Viết lời chúc của bạn</h1>
+    <textarea id="messageInput" placeholder="Nhập lời chúc tại đây..."></textarea>
+    <button onclick="submitCard()">Gửi lời chúc</button>
+    <p id="responseMessage"></p>
+  </div>
+
+  <div class="admin-panel" id="adminPanel">
+    <h2>Danh sách lời chúc</h2>
+    <ul id="messagesList"></ul>
+    <button onclick="hideMessages()">Ẩn danh sách</button>
+  </div>
+
+  <button onclick="showMessages()" style="margin-top: 20px;">Xem lời chúc</button>
+
+  <script>
+    // Hàm lưu lời chúc vào LocalStorage
+    function submitCard() {
+      const textarea = document.getElementById("messageInput");
+      const responseMessage = document.getElementById("responseMessage");
+      const message = textarea.value.trim();
+
+      if (message === "") {
+        responseMessage.textContent = "Vui lòng nhập lời chúc trước khi gửi!";
+        responseMessage.style.color = "red";
+      } else {
+        saveMessage(message);
+        responseMessage.textContent = "Lời chúc của bạn đã được ghi nhận. Cảm ơn!";
+        responseMessage.style.color = "green";
+        textarea.value = ""; // Reset textarea
+      }
+    }
+
+    // Lưu lời chúc vào LocalStorage
+    function saveMessage(message) {
+      let messages = JSON.parse(localStorage.getItem("messages")) || [];
+      messages.push(message);
+      localStorage.setItem("messages", JSON.stringify(messages));
+    }
+
+    // Hiển thị danh sách lời chúc
+    function showMessages() {
+      const adminPanel = document.getElementById("adminPanel");
+      const messagesList = document.getElementById("messagesList");
+      messagesList.innerHTML = ""; // Xóa danh sách cũ
+
+      const messages = JSON.parse(localStorage.getItem("messages")) || [];
+      messages.forEach((message) => {
+        const li = document.createElement("li");
+        li.textContent = message;
+        messagesList.appendChild(li);
+      });
+
+      adminPanel.style.display = "block"; // Hiện admin panel
+    }
+
+    // Ẩn danh sách lời chúc
+    function hideMessages() {
+      const adminPanel = document.getElementById("adminPanel");
+      adminPanel.style.display = "none"; // Ẩn admin panel
+    }
+  </script>
+</body>
+</html>
