@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kỷ yếu cấp 3 - Niên khóa 20222022</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+  }
+
+  /* Music player */
+  #music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff6f91;
+    border-radius: 50px;
+    box-shadow: 0 8px 15px rgba(255,111,145,0.7);
+    padding: 0.3rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    user-select: none;
+    z-index: 1000;
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+  }
+  #music-player:hover {
+    background: #e45c7f;
+  }
+  #music-player svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+    flex-shrink: 0;
+  }
+
+  header {
+    background: #ff6f91;
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateY(-30px);
+    animation: fadeSlideIn 0.8s ease forwards 0.2s;
+  }
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px #c94f65;
+  }
+  header p {
+    margin-top: 0.3rem;
+    font-weight: 400;
+    letter-spacing: 0.05rem;
+    font-style: italic;
+  }
+
+  nav {
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1rem 0;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeSlideIn 0.6s ease forwards 1s;
+  }
+  nav a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #ff6f91;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+  nav a:hover,
+  nav a.active {
+    color: #c94f65;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem 4rem;
+  }
+
+  section {
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  section h2 {
+    font-size: 2rem;
+    color: #ff4f6a;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+  }
+  section p {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* Memories gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 1.2rem;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(255,111,145,0.35);
+    object-fit: cover;
+    height: 140px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .gallery img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(255,111,145,0.6);
+  }
+
+  /* Video section */
+  .video-container {
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(255,111,145,0.3);
+  }
+  .video-container video,
+  .video-container iframe {
+    width: 100%;
+    height: 405px;
+    display: block;
+  }
+
+  /* Modal for photo preview */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 20;
+    top: 0; left: 0; right:0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .modal.show {
+    display: flex;
+    opacity: 1;
+  }
+  .modal img {
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(255,111,145,0.8);
+    animation: zoomIn 0.3s ease forwards;
+  }
+  .modal .close-btn {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    font-size: 2.5rem;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+  .modal .close-btn:hover {
+    color: #ff6f91;
+  }
+
+  /* Messages from students/teachers */
+  .messages {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .message {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(255,111,145,0.3);
+    padding: 1.5rem 2rem;
+    font-style: italic;
+    position: relative;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .message.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .message:before {
+    content: "“";
+    font-size: 3rem;
+    color: #ff6f91;
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-family: serif;
+  }
+  .message-footer {
+    margin-top: 0.8rem;
+    text-align: right;
+    font-weight: 700;
+    color: #c94f65;
+  }
+
+  /* Classmates list */
+  .classmates {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+    gap: 1.5rem;
+  }
+  .classmate {
+    background: white;
+    border-radius: 15px;
+    padding: 1.2rem;
+    box-shadow: 0 4px 12px rgba(255,111,145,0.2);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .classmate.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .classmate:hover {
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(255,111,145,0.4);
+  }
+  .classmate img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ff6f91;
+    margin-bottom: 0.8rem;
+  }
+  .classmate-name {
+    font-weight: 700;
+    color: #ff4f6a;
+    font-size: 1.1rem;
+  }
+  .classmate-role {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #c94f65;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.9rem;
+    margin: 2rem 0;
+    color: #777;
+  }
+
+  @media (max-width:600px) {
+    header h1 {
+      font-size: 1.8rem;
+    }
+    section h2 {
+      font-size: 1.5rem;
+    }
+    nav {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .video-container video,
+    .video-container iframe {
+      height: 220px;
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeSlideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+    /* Star style */
+    .star {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle at center, #ffffff 0%, #cceeff 60%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 1;
+      filter: drop-shadow(0 0 3px #a0d8f7);
+      animation: star-float 1s ease forwards;
+      mix-blend-mode: screen;
+      z-index: 999;
+    }
+
+    @keyframes star-float {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--y)) scale(0.2);
+        opacity: 0;
+      }
+    }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kỷ yếu cấp 3 </h1>
+  <p>Niên khóa 2022-2025</p>
+</header>
+<nav>
+  <a href="#about" class="active">Giới thiệu</a>
+  <a href="#memories">Kỷ niệm</a>
+  <a href="#video-memories">Video</a>
+  <a href="#messages">Lời nhắn</a>
+  <a href="#classmates">Bạn cùng lớp</a>
+</nav>
+<main>
+  <section id="about" class="animate-section">
+    <h2>Giới thiệu lớp</h2>
+    <p>Chào mừng các bạn đến với trang kỷ yếu lớp 12CHO niên khóa 2022 - 2025. 
+    Ba năm cấp 3 đầy ắp những câu chuyện, những kỷ niệm không thể nào quên. Hãy cùng nhau điểm lại những dấu ấn thời học trò và ghi nhớ bạn bè, thầy cô đáng quý trong quãng đời này!</p>
+  </section>
+
+  <section id="memories" class="animate-section">
+    <h2>Kỷ niệm đáng nhớ</h2>
+    <div class="gallery" tabindex="0">
+      <img src="./1.jpg" alt="Ảnh kỷ niệm 1" />
+      <img src="./2.jpg" alt="Ảnh kỷ niệm 2" />
+      <img src="./3.jpg" alt="Ảnh kỷ niệm 3" />
+      <img src="./4.jpg" alt="Ảnh kỷ niệm 4" />
+      <img src="./5.jpg" alt="Ảnh kỷ niệm 5" />
+      <img src="./6.jpg" alt="Ảnh kỷ niệm 6" />
+      <img src="./40.jpg" alt="Ảnh kỷ niệm 7" />
+      <img src="./39.jpg" atl="ảnh kỷ niệm 8" />
+    </div>
+  </section>
+
+  <section id="video-memories" class="animate-section">
+    <h2>Video kỷ niệm</h2>
+   <div style="display: flex; justify-content: center;">
+    <iframe src="https://drive.google.com/file/d/1UNXdXqRIUvCIrhaUVfiPBMyeup7GhxSd/preview" width="640" height="360" 
+        allow="autoplay"></iframe>
+    </div>
+  </section>
+
+
+  <section id="messages" class="animate-section">
+    <h2>Lời nhắn gửi</h2>
+    <div class="messages">
+      <div class="message">
+         
+        <div class="message-footer">- Hồ Ngọc Thư </div>
+      </div>
+      <div class="message">
+         
+        <div class="message-footer">- Nguyễn Sỹ An </div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Lê Cảnh Duy</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Đỗ Thị Phương Duyên</div>
+      </div>
+      <div class="message">
+       
+        <div class="message-footer">- 	Hoàng Duy Hà</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Nguyễn Hoàng</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Võ Thanh Tuấn Hưng</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Lương Thanh Khang</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Văn Trường Khang</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Tiến Khánh</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Viết Anh Khoa</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Trần Như Anh Kiệt</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Ngô Hoàng Long</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Võ Nhật Long</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Lê Phước Nhật Minh</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Đình Minh</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Trương Xuân Nghị</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Lê Hữu Hoàng Nguyên</div>
+      </div>
+      <div class="message">
+        .
+        <div class="message-footer">- Hà Đặng Minh Phúc</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Lê Xuân Hồng Sơn</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Hoàng Nhân Thiện Tâm</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- 	Nguyễn Phước Quý Tâm</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Trần Ngô Thanh Thảo</div>
+      </div>
+      <div class="message">
+         Chúc tập thể lớp 12 Hóa luôn gặp nhiều may mắn, đi xa để trở về!
+        <div class="message-footer">- 	Lê Công Minh Tiến</div>
+      </div>
+      <div class="message">
+        
+        <div class="message-footer">- Nguyễn Minh Tiến</div>
+      </div>
+      <div class="message">
+       
+        <div class="message-footer">- Hồ Lưu Thuỳ Trang</div>
+      </div>
+      <div class="message">
+       
+        <div class="message-footer">- Phan Ngọc Bảo Trân</div>
+      </div>
+      <div class="message">
+       
+        <div class="message-footer">- Nguyễn Viết Anh Tuấn</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="classmates" class="animate-section">
+    <h2>Bạn cùng lớp</h2>
+    <div class="classmates">
+      <div class="classmate">
+        <img src="./36.jpg" alt="Nguyễn Văn A" />
+        <div class="classmate-name">Hồ Ngọc Thư </div>
+        <div class="classmate-role">Giáo Viên Chủ Nhiệm</div>
+      </div>
+      <div class="classmate">
+        <img src="./28.jpg" alt="Nguyễn Văn A" />
+        <div class="classmate-name">Phan Ngọc Bảo Trân </div>
+        <div class="classmate-role">Lớp trưởng</div>
+      </div>
+      <div class="classmate">
+        <img src="./15.jpg" alt="Trần Thị Bích Ngọc" />
+        <div class="classmate-name">Hà Đặng Minh Phúc</div>
+        <div class="classmate-role">Lớp phó </div>
+      </div>
+      <div class="classmate">
+        <img src="./25.jpg" alt="Phạm Văn Cường" />
+        <div class="classmate-name">Nguyễn Sỹ An</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./20.jpg" alt="Lê Thị Dung" />
+        <div class="classmate-name">Lê Cảnh Duy</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./30.jpg" alt="Đinh Hoàng Long" />
+        <div class="classmate-name">Đỗ Thị Phương Duyên</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./19.jpg" alt="Hà Thu Hương" />
+        <div class="classmate-name">Hoàng Duy Hà</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./31.jpg" alt="Bùi Minh Hoàng" />
+        <div class="classmate-name">Nguyễn Hoàng</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./14.jpg" alt="Phan Thị Mai" />
+        <div class="classmate-name">Võ Thanh Tuấn Hưng</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./23.jpg" alt="Hoàng Văn Nam" />
+        <div class="classmate-name">Lương Thanh Khang</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./16.jpg" alt="Vũ Thị Lan" />
+        <div class="classmate-name">Nguyễn Văn Trường Khang</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./12.jpg" alt="Trương Minh Đức" />
+        <div class="classmate-name">Nguyễn Tiến Khánh</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./34.jpg" alt="Ngô Thị Hạnh" />
+        <div class="classmate-name">Nguyễn Viết Anh Khoa</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./33.jpg" alt="Lê Văn Tùng" />
+        <div class="classmate-name">Trần Như Anh Kiệt</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./21.jpg" alt="Đỗ Thị Hoa" />
+        <div class="classmate-name">Nguyễn Ngô Hoàng Long</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./26.jpg" alt="Phùng Minh Quân" />
+        <div class="classmate-name">Võ Nhật Long</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./13.jpg" alt="Tạ Thị Hồng" />
+        <div class="classmate-name">Lê Phước Nhật Minh</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./27.jpg" alt="Trần Văn Đông" />
+        <div class="classmate-name">Nguyễn Đình Minh</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./11.jpg" alt="Nguyễn Thị Phương" />
+        <div class="classmate-name">Trương Xuân Nghị</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./18.jpg" alt="Võ Minh Hải" />
+        <div class="classmate-name">Lê Hữu Hoàng Nguyên</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./17.jpg" alt="Lý Thị Thanh" />
+        <div class="classmate-name">Lê Xuân Hồng Sơn</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./35.jpg" alt="Dương Văn Bá" />
+        <div class="classmate-name">Hoàng Nhân Thiện Tâm</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./29.jpg" alt="Phạm Thị Huyền" />
+        <div class="classmate-name">Nguyễn Phước Quý Tâm</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./9.jpg" alt="Nguyễn Đức Anh" />
+        <div class="classmate-name">Trần Ngô Thanh Thảo</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./24.jpg" alt="Bùi Thị Mai" />
+        <div class="classmate-name">Lê Công Minh Tiến</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./22.jpg" alt="Trần Thanh Tùng" />
+        <div class="classmate-name">Nguyễn Minh Tiến</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+    <div class="classmate">
+        <img src="./10.jpg" alt="Bùi Thị Mai" />
+        <div class="classmate-name">Hồ Lưu Thuỳ Trang</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+      <div class="classmate">
+        <img src="./32.jpg" alt="Bùi Thị Mai" />
+        <div class="classmate-name">Nguyễn Viết Anh Tuấn</div>
+        <div class="classmate-role">Học sinh</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Fixed music player with toggle -->
+<div id="music-player" title="Phát / Tạm dừng nhạc" aria-label="Phát hoặc tạm dừng nhạc nền" role="button" tabindex="0">
+  <svg viewBox="0 0 24 24" aria-hidden="true" id="music-icon" >
+    <path d="M8 5v14l11-7z"></path>
+  </svg>
+  Nhạc nền
+</div>
+<audio id="background-music" loop preload="auto">
+  <source src="./cap3.m4a" type="audio/mp3"/>
+  Trình duyệt của bạn không hỗ trợ thẻ audio.
+</audio>
+
+<footer>
+  &copy; 2022 Kỷ yếu cấp 3 - Niên khóa 2022 - 2025. All rights reserved.
+</footer>
+
+<script>
+  // Navigation active link highlight on scroll
+  const sections = document.querySelectorAll('main section');
+  const navLinks = document.querySelectorAll('nav a');
+
+  function setActiveNav() {
+    let index = sections.length;
+
+    while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+    navLinks.forEach(link => link.classList.remove('active'));
+    navLinks[index].classList.add('active');
+  }
+  setActiveNav();
+  window.addEventListener('scroll', setActiveNav);
+
+  // Smooth scrolling for nav links
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').substring(1);
+      document.getElementById(targetId).scrollIntoView({behavior: 'smooth'});
+    });
+  });
+
+  // Gallery modal preview
+  const galleryImages = document.querySelectorAll('.gallery img');
+  const modal = document.createElement('div');
+  modal.id = 'modal';
+  modal.className = 'modal';
+  modal.innerHTML = '<span class="close-btn" aria-label="Đóng">&times;</span><img alt="Ảnh kỷ niệm lớn" />';
+  document.body.appendChild(modal);
+
+  const modalImg = modal.querySelector('img');
+  const closeBtn = modal.querySelector('.close-btn');
+
+  galleryImages.forEach(img => {
+    img.addEventListener('click', () => {
+      modalImg.src = img.src;
+      modalImg.alt = img.alt;
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  });
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Intersection Observer for fade-in animations on sections, messages, classmates
+  const observerOptions = {
+    threshold: 0.15
+  };
+
+  const fadeInObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('section.animate-section').forEach(section => {
+    fadeInObserver.observe(section);
+  });
+  document.querySelectorAll('.message').forEach(message => {
+    fadeInObserver.observe(message);
+  });
+  document.querySelectorAll('.classmate').forEach(classmate => {
+    fadeInObserver.observe(classmate);
+  });
+
+  // Music player toggle logic
+  const musicPlayer = document.getElementById('music-player');
+  const bgMusic = document.getElementById('background-music');
+  const musicIcon = document.getElementById('music-icon');
+
+  function updateIconPlaying(isPlaying) {
+    if (isPlaying) {
+      musicIcon.innerHTML = '<path d="M6 19h4.5V5H6v14zm7.5 0H18V5h-4.5v14z"/>'; // pause icon
+    } else {
+      musicIcon.innerHTML = '<path d="M8 5v14l11-7z"></path>'; // play icon
+    }
+  }
+
+  // Initially paused, user has to click to play
+  updateIconPlaying(false);
+
+  musicPlayer.addEventListener('click', () => {
+    if (bgMusic.paused) {
+      bgMusic.play();
+      updateIconPlaying(true);
+    } else {
+      bgMusic.pause();
+      updateIconPlaying(false);
+    }
+  });
+
+  // Also toggle via keyboard (Enter or Space)
+  musicPlayer.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      musicPlayer.click();
+    }
+  });
+  (function() {
+      const maxStars = 30;
+      let stars = [];
+
+      function createStar(x, y) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+
+        // Random float direction and distance for animation
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 50 + Math.random() * 50;
+        const translateX = Math.cos(angle) * distance + 'px';
+        const translateY = Math.sin(angle) * distance + 'px';
+
+        star.style.setProperty('--x', translateX);
+        star.style.setProperty('--y', translateY);
+
+        document.body.appendChild(star);
+
+        // Remove the star after animation ends
+        setTimeout(() => {
+          star.remove();
+          stars = stars.filter(s => s !== star);
+        }, 1000);
+
+        stars.push(star);
+        if (stars.length > maxStars) {
+          let oldStar = stars.shift();
+          if (oldStar) oldStar.remove();
+        }
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        createStar(e.clientX, e.clientY);
+      });
+    })();
+</script>
+</body>
+</html>
