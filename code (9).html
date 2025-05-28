@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kỉ Yếu Toàn Trường 12</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+    font-family: 'Baloo 2', cursive, Arial, sans-serif;
+    color: #4a2c5a;
+    overflow-x: hidden;
+  }
+  header {
+    background: #fff0f6;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(74,44,90,0.3);
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 2.4em;
+    letter-spacing: 2px;
+  }
+  main {
+    max-width: 1000px;
+    padding: 20px 15px 80px;
+    margin: 0 auto;
+  }
+  form#message-form {
+    background: #fff0f6cc;
+    border-radius: 20px;
+    max-width: 600px;
+    margin: 0 auto 50px auto;
+    padding: 20px 25px;
+    box-shadow: 0 3px 20px rgb(74 44 90 / 0.3);
+  }
+  form#message-form h3 {
+    margin-top: 0;
+    color: #a32965;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 1.05em;
+    color: #802753;
+  }
+  input[type="text"], select, textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 2px solid #f48fb1;
+    padding: 10px 15px;
+    font-family: 'Baloo 2', cursive, Arial, sans-serif;
+    font-size: 1em;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus, select:focus, textarea:focus {
+    border-color: #a32965;
+  }
+  textarea {
+    min-height: 70px;
+  }
+  input[type="file"] {
+    margin-top: 8px;
+    margin-bottom: 15px;
+  }
+  button#post-btn {
+    background: #e91e63;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 35px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 700;
+    display: block;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(233,30,99,0.6);
+    transition: background 0.3s ease;
+  }
+  button#post-btn:hover, button#post-btn:focus {
+    background: #ad1457;
+  }
+  #messages-board {
+    max-width: 800px;
+    margin: 0 auto 60px auto;
+  }
+  section.class-group {
+    margin-bottom: 50px;
+    padding: 10px 15px 20px;
+    border-radius: 18px;
+    background: #ffc1e3a1;
+    box-shadow: 0 2px 20px rgba(244,143,177,0.4);
+  }
+  section.class-group h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.8em;
+    color: #a32965;
+    border-bottom: 2px dashed #f48fb1;
+    padding-bottom: 6px;
+  }
+  .message-card {
+    background: #fce4eccc;
+    border-radius: 20px;
+    box-shadow: 0 3px 15px #d81b60aa;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    position: relative;
+    overflow-wrap: break-word;
+  }
+  .message-card h4 {
+    margin: 0 0 8px;
+    color: #880e4f;
+  }
+  .student-section {
+    border-radius: 15px;
+    padding: 12px 15px;
+    background: #fff0f6;
+    border: 2px solid #f48fb1;
+  }
+  .message-text {
+    white-space: pre-wrap;
+  }
+  .message-media {
+    margin-top: 8px;
+    max-width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px #f48fb173;
+  }
+  .message-video {
+    margin-top: 8px;
+    width: 100%;
+    max-height: 350px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px #f48fb173;
+  }
+  .congrats-frame {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: #fce4ec;
+    border-radius: 25px;
+    padding: 40px 60px;
+    text-align: center;
+    color: #ad1457;
+    box-shadow: 0 5px 25px rgba(233, 30, 99, 0.7);
+    font-size: 1.6em;
+    font-weight: 700;
+    filter: drop-shadow(0 0 12px #f48fb1);
+    z-index: 9999;
+    user-select: none;
+    transition: transform 0.5s cubic-bezier(0.4, 1.45, 0.6, 1.4);
+  }
+  .congrats-frame.show {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  /* Hearts Animation */
+  .heart {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: #f48fb1;
+    transform: rotate(45deg);
+    pointer-events: none;
+    animation: floatUp 1.2s ease forwards;
+    z-index: 10000;
+    opacity: 0.8;
+  }
+  .heart::before,
+  .heart::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #f48fb1;
+    border-radius: 50%;
+  }
+  .heart::before {
+    top: -10px;
+    left: 0;
+  }
+  .heart::after {
+    left: 10px;
+    top: 0;
+  }
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) rotate(45deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(-100px) rotate(45deg);
+      opacity: 0;
+    }
+  }
+  /* Responsive */
+  @media (max-width: 700px) {
+    main {
+      padding: 10px 10px 70px;
+    }
+    form#message-form {
+      max-width: 90vw;
+      padding: 15px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kỉ Yếu Toàn Trường Lớp 12</h1>
+  <p style="font-style: italic; color:#ad1457; margin-top:6px;">Gửi lời chúc & kỉ niệm ngọt ngào của bạn!</p>
+</header>
+
+<main>
+  <form id="message-form" aria-label="Form đăng lời chúc">
+    <h3>Đăng lời chúc và kỉ niệm</h3>
+
+    <label for="fullname">Họ và tên:</label>
+    <input type="text" id="fullname" name="fullname" placeholder="Nhập họ và tên" required autocomplete="off" />
+
+    <label for="class-select">Chọn lớp:</label>
+    <select id="class-select" name="class-select" required>
+      <option value="" disabled selected>Chọn lớp</option>
+      <option value="12 Toán">12 Toán</option>
+      <option value="12 Lý">12 Lý</option>
+      <option value="12 Hóa">12 Hóa</option>
+      <option value="12 Văn 1">12 Văn 1</option>
+      <option value="12 Văn 2">12 Văn 2</option>
+      <option value="12 Sinh">12 Sinh</option>
+    </select>
+
+    <label for="message-text">Lời chúc / Kỉ niệm:</label>
+    <textarea id="message-text" name="message-text" placeholder="Viết lời chúc hoặc kỉ niệm..." required></textarea>
+
+    <label for="media-input">Thêm ảnh / video (jpg, png, mp4):</label>
+    <input type="file" id="media-input" name="media-input" accept="image/jpeg,image/png,video/mp4" multiple />
+
+    <button id="post-btn" type="submit">Đăng lời chúc</button>
+  </form>
+
+  <div id="messages-board" aria-live="polite" aria-relevant="additions" aria-atomic="true">
+    <!-- Messages grouped by class will appear here -->
+  </div>
+</main>
+
+<div class="congrats-frame" id="congrats-frame" role="alert" aria-live="assertive" aria-atomic="true">Lời chúc của bạn đã được gửi! 💖</div>
+
+<script>
+  // Heart animation on mouse move and click
+  const hearts = [];
+  function createHeart(x, y) {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = (x - 10) + 'px';
+    heart.style.top = (y - 10) + 'px';
+    document.body.appendChild(heart);
+    hearts.push(heart);
+    setTimeout(() => {
+      heart.remove();
+      hearts.splice(hearts.indexOf(heart), 1);
+    }, 1200);
+  }
+
+  document.addEventListener('mousemove', e => {
+    if (Math.random() < 0.04) { // not too many hearts, about 4% chance on mousemove
+      createHeart(e.clientX, e.clientY);
+    }
+  });
+
+  document.addEventListener('click', e => {
+    for(let i=0; i<5; i++) {
+      setTimeout(() => createHeart(e.clientX + (Math.random()*20-10), e.clientY + (Math.random()*20-10)), i * 40);
+    }
+  });
+
+  const form = document.getElementById('message-form');
+  const messagesBoard = document.getElementById('messages-board');
+  const congratsFrame = document.getElementById('congrats-frame');
+
+  const classOrder = [
+    "12 Toán",
+    "12 Lý",
+    "12 Hóa",
+    "12 Văn 1",
+    "12 Văn 2",
+    "12 Sinh"
+  ];
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const fullname = form['fullname'].value.trim();
+    const className = form['class-select'].value;
+    const messageText = form['message-text'].value.trim();
+    const mediaFiles = form['media-input'].files;
+
+    if (!fullname || !className || !messageText) {
+      alert('Vui lòng điền đầy đủ thông tin và lời chúc.');
+      return;
+    }
+
+    // Create message card container
+    const card = document.createElement('article');
+    card.className = 'message-card';
+    card.tabIndex = 0;
+    card.dataset.classname = className;
+    card.setAttribute('aria-label', `Lời chúc từ ${fullname} lớp ${className}`);
+
+    // Student section
+    const studentSection = document.createElement('section');
+    studentSection.className = 'student-section';
+    const studentHeader = document.createElement('h4');
+    studentHeader.textContent = fullname + ' - ' + className;
+    studentSection.appendChild(studentHeader);
+
+    const studentMsg = document.createElement('p');
+    studentMsg.className = 'message-text';
+    studentMsg.textContent = messageText;
+    studentSection.appendChild(studentMsg);
+
+    // Append media to student section
+    if (mediaFiles.length > 0) {
+      for (let file of mediaFiles) {
+        const type = file.type;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.alt = 'Ảnh lời chúc';
+            img.className = 'message-media';
+            studentSection.appendChild(img);
+          } else if (type === 'video/mp4') {
+            const video = document.createElement('video');
+            video.controls = true;
+            video.src = event.target.result;
+            video.className = 'message-video';
+            studentSection.appendChild(video);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    card.appendChild(studentSection);
+
+    // Insert or group by class
+    addMessageToClassGroup(card, className);
+
+    // Show congrats frame with animation
+    congratsFrame.classList.add('show');
+    setTimeout(() => {
+      congratsFrame.classList.remove('show');
+    }, 2500);
+
+    form.reset();
+  });
+
+  /**
+   * Adds the given message card to the group for the className.
+   * Creates the group container if it doesn't exist.
+   * Ensures classes appear in order as in classOrder array.
+   */
+  function addMessageToClassGroup(card, className) {
+    // Find or create container for class
+    let classGroup = messagesBoard.querySelector(`section.class-group[data-class="${className}"]`);
+    if (!classGroup) {
+      classGroup = document.createElement('section');
+      classGroup.className = 'class-group';
+      classGroup.dataset.class = className;
+
+      const heading = document.createElement('h3');
+      heading.textContent = className;
+      classGroup.appendChild(heading);
+
+      // Insert group in correct order
+      const existingGroups = Array.from(messagesBoard.querySelectorAll('section.class-group'));
+      let inserted = false;
+      for (let i = 0; i < existingGroups.length; i++) {
+        const existingClass = existingGroups[i].dataset.class;
+        if (classOrder.indexOf(className) < classOrder.indexOf(existingClass)) {
+          messagesBoard.insertBefore(classGroup, existingGroups[i]);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) messagesBoard.appendChild(classGroup);
+    }
+
+    // Insert card at top (newest first)
+    classGroup.insertBefore(card, classGroup.children[1] || null); // after heading
+  }
+</script>
+
+</body>
+</html>
