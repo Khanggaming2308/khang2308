@@ -221,6 +221,10 @@
 </style>
 </head>
 <body>
+<audio id="background-audio" autoplay loop>
+  <source src="./12.mp4" type="audio/mpeg">
+  Trình duyệt của bạn không hỗ trợ âm thanh.
+</audio>
 
 <header>
   <h1>Kỉ Yếu Toàn Trường Lớp 12</h1>
@@ -250,7 +254,9 @@
 
     <label for="media-input">Thêm ảnh / video (jpg, png, mp4):</label>
     <input type="file" id="media-input" name="media-input" accept="image/jpeg,image/png,video/mp4" multiple />
-
+ <label for="signature-pad">Ký tên:</label>
+<canvas id="signature-pad" width="400" height="150" style="border:2px solid #f48fb1; border-radius:11px; background:#fff;"></canvas>
+<button type="button" id="clear-signature" style="margin-top: 8px; margin-bottom: 20px; background: #f48fb1; color:white; border:none; border-radius:20px; padding:5px 12px; cursor:pointer;">🧼 Xóa chữ ký</button>
     <button id="post-btn" type="submit">Đăng lời chúc</button>
   </form>
 
@@ -321,6 +327,7 @@
     card.tabIndex = 0;
     card.dataset.classname = className;
     card.setAttribute('aria-label', `Lời chúc từ ${fullname} lớp ${className}`);
+   
 
     // Student section
     const studentSection = document.createElement('section');
@@ -333,6 +340,29 @@
     studentMsg.className = 'message-text';
     studentMsg.textContent = messageText;
     studentSection.appendChild(studentMsg);
+  // Thêm chữ ký (nếu có)
+const signatureData = canvas.toDataURL();
+if (signatureData && !signatureIsEmpty()) {
+  const img = document.createElement('img');
+  img.src = signatureData;
+  img.alt = 'Chữ ký';
+  img.style.maxWidth = '200px';
+  img.style.marginTop = '10px';
+  img.className = 'message-media';
+  studentSection.appendChild(img);
+}
+    // Nút xóa
+const deleteBtn = document.createElement('button');
+deleteBtn.textContent = '🗑 Xóa';
+deleteBtn.style.cssText = 'position:absolute; top:10px; right:15px; background:none; border:none; color:#ad1457; font-size:1.2em; cursor:pointer;';
+deleteBtn.title = 'Xóa lời chúc';
+deleteBtn.addEventListener('click', () => {
+  if (confirm('Bạn có chắc muốn xóa lời chúc này không?')) {
+    card.remove();
+    removeMessageFromStorage(fullname, className, messageText);
+  }
+});
+card.appendChild(deleteBtn);
 
     // Append media to student section
     if (mediaFiles.length > 0) {
@@ -368,8 +398,18 @@
     setTimeout(() => {
       congratsFrame.classList.remove('show');
     }, 2500);
-
+  // Lưu vào localStorage
+const newMessage = {
+  fullname,
+  className,
+  messageText,
+  timestamp: Date.now()
+};
+const existingMessages = JSON.parse(localStorage.getItem('messages') || '[]');
+existingMessages.push(newMessage);
+localStorage.setItem('messages', JSON.stringify(existingMessages));
     form.reset();
+    newMessage.signature = signatureIsEmpty() ? null : signatureData;
   });
 
   /**
@@ -406,7 +446,105 @@
     // Insert card at top (newest first)
     classGroup.insertBefore(card, classGroup.children[1] || null); // after heading
   }
-</script>
+  // Hàm load lại lời chúc từ localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  const savedMessages = JSON.parse(localStorage.getItem('messages') || '[]');
+  savedMessages.sort((a, b) => b.timestamp - a.timestamp); // Mới nhất lên trước
+  for (let msg of savedMessages) {
+    const card = document.createElement('article');
+    card.className = 'message-card';
+    card.tabIndex = 0;
+    card.dataset.classname = msg.className;
+    card.setAttribute('aria-label', `Lời chúc từ ${msg.fullname} lớp ${msg.className}`);
 
+    const studentSection = document.createElement('section');
+    studentSection.className = 'student-section';
+    const studentHeader = document.createElement('h4');
+    studentHeader.textContent = msg.fullname + ' - ' + msg.className;
+    studentSection.appendChild(studentHeader);
+
+    const studentMsg = document.createElement('p');
+    studentMsg.className = 'message-text';
+    studentMsg.textContent = msg.messageText;
+    studentSection.appendChild(studentMsg);
+
+    card.appendChild(studentSection);
+    addMessageToClassGroup(card, msg.className);
+  }
+});
+function removeMessageFromStorage(fullname, className, messageText) {
+  const stored = JSON.parse(localStorage.getItem('messages') || '[]');
+  const updated = stored.filter(msg => {
+    return !(msg.fullname === fullname && msg.className === className && msg.messageText === messageText);
+  });
+  localStorage.setItem('messages', JSON.stringify(updated));
+}
+document.addEventListener('click', () => {
+  const audio = document.getElementById('background-audio');
+  if (audio && audio.paused) {
+    audio.play().catch(e => {
+      console.warn("Không thể phát nhạc tự động:", e);
+    });
+  }
+}, { once: true });
+const canvas = document.getElementById('signature-pad');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+canvas.addEventListener('mousedown', e => {
+  drawing = true;
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+});
+canvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.strokeStyle = '#ad1457';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+});
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseleave', () => drawing = false);
+
+// Touch support
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  ctx.beginPath();
+  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  drawing = true;
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drawing) return;
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  ctx.strokeStyle = '#ad1457';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+});
+canvas.addEventListener('touchend', () => drawing = false);
+
+// Xóa chữ ký
+document.getElementById('clear-signature').addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+function signatureIsEmpty() {
+  const blank = document.createElement('canvas');
+  blank.width = canvas.width;
+  blank.height = canvas.height;
+  return canvas.toDataURL() === blank.toDataURL();
+}
+if (msg.signature) {
+  const sig = document.createElement('img');
+  sig.src = msg.signature;
+  sig.alt = 'Chữ ký';
+  sig.style.maxWidth = '200px';
+  sig.className = 'message-media';
+  studentSection.appendChild(sig);
+}
+</script>
 </body>
 </html>
