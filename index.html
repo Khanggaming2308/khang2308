@@ -1,550 +1,692 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kỉ Yếu Toàn Trường 12</title>
+<title>Trường 12 Kỉ Yếu - Cute Yearbook</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
+  /* Reset & base */
   * {
     box-sizing: border-box;
   }
   body {
     margin: 0;
-    background: linear-gradient(135deg, #fce4ec, #f8bbd0);
-    font-family: 'Baloo 2', cursive, Arial, sans-serif;
-    color: #4a2c5a;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(135deg, #ffe6f2, #d0f0fd);
+    color: #555;
+    user-select: none;
     overflow-x: hidden;
   }
   header {
-    background: #fff0f6;
-    padding: 20px;
+    background: #ffb6c1;
+    padding: 1.5rem 1rem;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(74,44,90,0.3);
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 2.4em;
-    letter-spacing: 2px;
+    color: #6a2c70;
+    font-weight: bold;
+    font-size: 1.8rem;
+    text-shadow: 1px 1px 2px #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
   main {
-    max-width: 1000px;
-    padding: 20px 15px 80px;
-    margin: 0 auto;
+    max-width: 900px;
+    margin: 1rem auto 2rem;
+    background: #fff;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 15px rgba(106,44,112,.3);
   }
-  form#message-form {
-    background: #fff0f6cc;
-    border-radius: 20px;
-    max-width: 600px;
-    margin: 0 auto 50px auto;
-    padding: 20px 25px;
-    box-shadow: 0 3px 20px rgb(74 44 90 / 0.3);
-  }
-  form#message-form h3 {
-    margin-top: 0;
-    color: #a32965;
-    margin-bottom: 15px;
+
+  h2 {
     text-align: center;
+    color: #b03a5d;
+    margin-bottom: 1rem;
+  }
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 1rem;
+    background: #ffe6f2aa;
   }
   label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 700;
-    font-size: 1.05em;
-    color: #802753;
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #b03a5d;
   }
-  input[type="text"], select, textarea {
-    width: 100%;
+  input[type="text"],
+  select,
+  textarea {
     border-radius: 12px;
-    border: 2px solid #f48fb1;
-    padding: 10px 15px;
-    font-family: 'Baloo 2', cursive, Arial, sans-serif;
-    font-size: 1em;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.3s ease;
+    border: 2px solid #f6a7c1;
+    padding: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: none;
+    outline-offset: 2px;
+    outline-color: #f6a7c1;
+    transition: border-color 0.3s;
+    width: 180px;
   }
-  input[type="text"]:focus, select:focus, textarea:focus {
-    border-color: #a32965;
+  input[type="text"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #6a2c70;
   }
   textarea {
-    min-height: 70px;
+    width: 360px;
+    height: 90px;
   }
-  input[type="file"] {
-    margin-top: 8px;
-    margin-bottom: 15px;
-  }
-  button#post-btn {
-    background: #e91e63;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 35px;
+  button {
     cursor: pointer;
-    font-size: 1.1em;
-    font-weight: 700;
-    display: block;
-    width: 100%;
-    box-shadow: 0 4px 8px rgba(233,30,99,0.6);
-    transition: background 0.3s ease;
+    background: #ff8fb8;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px #f69aba88;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+    margin-top: 1.2rem;
   }
-  button#post-btn:hover, button#post-btn:focus {
-    background: #ad1457;
+  button:hover {
+    background: #b03a5d;
   }
-  #messages-board {
-    max-width: 800px;
-    margin: 0 auto 60px auto;
+
+  /* Message area */
+  #messages {
+    margin-top: 2rem;
+    border-top: 2px solid #f6a7c1;
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 560px;
+    overflow-y: auto;
   }
-  section.class-group {
-    margin-bottom: 50px;
-    padding: 10px 15px 20px;
+  .message {
+    border: 2px solid #ffb1cc;
     border-radius: 18px;
-    background: #ffc1e3a1;
-    box-shadow: 0 2px 20px rgba(244,143,177,0.4);
-  }
-  section.class-group h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 1.8em;
-    color: #a32965;
-    border-bottom: 2px dashed #f48fb1;
-    padding-bottom: 6px;
-  }
-  .message-card {
-    background: #fce4eccc;
-    border-radius: 20px;
-    box-shadow: 0 3px 15px #d81b60aa;
-    margin-bottom: 20px;
-    padding: 15px 20px;
-    position: relative;
-    overflow-wrap: break-word;
-  }
-  .message-card h4 {
-    margin: 0 0 8px;
-    color: #880e4f;
-  }
-  .student-section {
-    border-radius: 15px;
-    padding: 12px 15px;
+    padding: 1rem;
     background: #fff0f6;
-    border: 2px solid #f48fb1;
+    box-shadow: 0 4px 10px #fcd2e0cc;
+    position: relative;
+    animation: fadeIn 1s ease forwards;
   }
-  .message-text {
-    white-space: pre-wrap;
-  }
-  .message-media {
-    margin-top: 8px;
-    max-width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px #f48fb173;
-  }
-  .message-video {
-    margin-top: 8px;
-    width: 100%;
-    max-height: 350px;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px #f48fb173;
-  }
-  .congrats-frame {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    background: #fce4ec;
-    border-radius: 25px;
-    padding: 40px 60px;
-    text-align: center;
-    color: #ad1457;
-    box-shadow: 0 5px 25px rgba(233, 30, 99, 0.7);
-    font-size: 1.6em;
+  .message .meta {
     font-weight: 700;
-    filter: drop-shadow(0 0 12px #f48fb1);
-    z-index: 9999;
-    user-select: none;
-    transition: transform 0.5s cubic-bezier(0.4, 1.45, 0.6, 1.4);
+    color: #af3d6c;
+    margin-bottom: 0.4rem;
   }
-  .congrats-frame.show {
-    transform: translate(-50%, -50%) scale(1);
+  .message .class-name {
+    font-weight: 600;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #d66a92;
   }
-  /* Hearts Animation */
-  .heart {
+  .message .text {
+    white-space: pre-wrap;
+    margin-top: 0.5rem;
+  }
+  .message img,
+  .message video {
+    margin-top: 0.7rem;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px #f6badacc;
+  }
+  .message video {
+    max-height: 280px;
+  }
+  .message .signature {
+    margin-top: 0.8rem;
+    border-top: 1px dashed #d66a92;
+    padding-top: 0.6rem;
+    max-width: 320px;
+  }
+  .message .signature img {
+    max-width: 100%;
+  }
+
+  /* Animation */
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  /* Greeting overlay */
+  #greeting-overlay {
     position: fixed;
-    width: 20px;
-    height: 20px;
-    background: #f48fb1;
-    transform: rotate(45deg);
+    top:0; left:0; width:100vw; height:100vh;
+    background: rgba(255, 182, 193, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6a2c70;
+    font-size: 2.2rem;
+    font-weight: bold;
+    border-radius: 24px;
+    padding: 2rem;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0;
     pointer-events: none;
-    animation: floatUp 1.2s ease forwards;
-    z-index: 10000;
+    transition: opacity 0.4s ease;
+  }
+  #greeting-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #greeting-overlay p {
+    margin-bottom: 1.5rem;
+    font-family: 'Comic Sans MS', cursive;
+  }
+  #greeting-overlay small {
+    font-size: 1.1rem;
+    font-weight: 400;
     opacity: 0.8;
   }
-  .heart::before,
-  .heart::after {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #f48fb1;
-    border-radius: 50%;
+
+  /* Signature canvas */
+  #signature-container {
+    margin-top: 1rem;
+    border: 2px dashed #f6a7c1;
+    border-radius: 14px;
+    padding: 0.7rem;
+    text-align: center;
+    max-width: 400px;
   }
-  .heart::before {
-    top: -10px;
-    left: 0;
+  #signature-canvas {
+    border: 2px solid #f6a7c1;
+    border-radius: 12px;
+    background: #fff0f6;
+    touch-action: none;
   }
-  .heart::after {
-    left: 10px;
-    top: 0;
+  #clear-signature,
+  #save-signature {
+    margin: 0.5rem 0.4rem 0 0.4rem;
+    background: #f7a6bf;
+    border: none;
+    color: #6a2c70;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px #fbd2ddcc;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s;
   }
-  @keyframes floatUp {
-    0% {
-      transform: translateY(0) rotate(45deg);
-      opacity: 0.8;
-    }
-    100% {
-      transform: translateY(-100px) rotate(45deg);
-      opacity: 0;
-    }
+  #clear-signature:hover,
+  #save-signature:hover {
+    background: #b03a5d;
+    color: #fff;
   }
+
+  /* File preview styling */
+  #file-preview {
+    margin-top: 0.8rem;
+    max-width: 360px;
+    max-height: 200px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px #f7a6bfaa;
+  }
+  #file-preview video {
+    max-height: 180px;
+  }
+
+  /* Music player */
+  #music-controls {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  #music-controls button {
+    background: #f6a7c1;
+    color: #6a2c70;
+    font-weight: bold;
+    border-radius: 18px;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    margin: 0 0.6rem;
+    box-shadow: 0 3px 8px #fbd2ddcc;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #music-controls button:hover {
+    background: #b03a5d;
+    color: #fff;
+  }
+
   /* Responsive */
-  @media (max-width: 700px) {
-    main {
-      padding: 10px 10px 70px;
+  @media (max-width: 720px) {
+    form {
+      flex-direction: column;
+      align-items: center;
     }
-    form#message-form {
-      max-width: 90vw;
-      padding: 15px 20px;
+    input[type="text"],
+    select,
+    textarea {
+      width: 90%;
+    }
+    textarea {
+      height: 120px;
     }
   }
 </style>
 </head>
 <body>
-<audio id="background-audio" autoplay loop>
-  <source src="./12.m4a" type="audio/mpeg">
-  Trình duyệt của bạn không hỗ trợ âm thanh.
-</audio>
-
 <header>
-  <h1>Kỉ Yếu Toàn Trường Lớp 12</h1>
-  <p style="font-style: italic; color:#ad1457; margin-top:6px;">Gửi lời chúc & kỉ niệm ngọt ngào của bạn!</p>
+  Kỉ Yếu Toàn Trường 12 - Cute Yearbook
 </header>
-
 <main>
-  <form id="message-form" aria-label="Form đăng lời chúc">
-    <h3>Đăng lời chúc và kỉ niệm</h3>
+  <h2>Đăng Tin Nhắn & Ký Tên</h2>
+  <form id="message-form" autocomplete="off">
+    <label>
+      Họ và tên:
+      <input type="text" id="name-input" placeholder="Tên bạn..." required maxlength="50" />
+    </label>
+    <label>
+      Lớp:
+      <select id="class-select" required>
+        <option value="" disabled selected>Chọn lớp</option>
+        <option value="12 Toán">12 Toán</option>
+        <option value="12 Lý">12 Lý</option>
+        <option value="12 Hóa">12 Hóa</option>
+        <option value="12 Văn 1">12 Văn 1</option>
+        <option value="12 Văn 2">12 Văn 2</option>
+        <option value="12 Sinh">12 Sinh</option>
+      </select>
+    </label>
+    <label style="flex-basis: 100%;">
+      Lời nhắn:
+      <textarea id="message-text" placeholder="Viết lời nhắn của bạn ở đây..." required maxlength="400" ></textarea>
+    </label>
 
-    <label for="fullname">Họ và tên:</label>
-    <input type="text" id="fullname" name="fullname" placeholder="Nhập họ và tên" required autocomplete="off" />
+    <label style="flex-basis: 100%;">
+      Thêm ảnh/video (png,jpg,jpeg,gif, mp4):
+      <input type="file" id="file-input" accept="image/*,video/mp4" />
+      <div id="file-preview"></div>
+    </label>
 
-    <label for="class-select">Chọn lớp:</label>
-    <select id="class-select" name="class-select" required>
-      <option value="" disabled selected>Chọn lớp</option>
-      <option value="12 Toán">12 Toán</option>
-      <option value="12 Lý">12 Lý</option>
-      <option value="12 Hóa">12 Hóa</option>
-      <option value="12 Văn 1">12 Văn 1</option>
-      <option value="12 Văn 2">12 Văn 2</option>
-      <option value="12 Sinh">12 Sinh</option>
-    </select>
+    <div id="signature-container" style="flex-basis: 100%;">
+      <label>Ký tên bằng cách vẽ:</label>
+      <canvas id="signature-canvas" width="360" height="140"></canvas><br/>
+      <button type="button" id="clear-signature">Xóa chữ ký</button>
+      <button type="button" id="save-signature">Lưu chữ ký</button>
+    </div>
 
-    <label for="message-text">Lời chúc / Kỉ niệm:</label>
-    <textarea id="message-text" name="message-text" placeholder="Viết lời chúc hoặc kỉ niệm..." required></textarea>
-
-    <label for="media-input">Thêm ảnh / video (jpg, png, mp4):</label>
-    <input type="file" id="media-input" name="media-input" accept="image/jpeg,image/png,video/mp4" multiple />
- <label for="signature-pad">Ký tên:</label>
-<canvas id="signature-pad" width="400" height="150" style="border:2px solid #f48fb1; border-radius:11px; background:#fff;"></canvas>
-<button type="button" id="clear-signature" style="margin-top: 8px; margin-bottom: 20px; background: #f48fb1; color:white; border:none; border-radius:20px; padding:5px 12px; cursor:pointer;">🧼 Xóa chữ ký</button>
-    <button id="post-btn" type="submit">Đăng lời chúc</button>
+    <button type="submit" style="flex-basis: 100%;">Đăng lời nhắn</button>
   </form>
 
-  <div id="messages-board" aria-live="polite" aria-relevant="additions" aria-atomic="true">
-    <!-- Messages grouped by class will appear here -->
+  <div id="greeting-overlay" title="Click để đóng">
+    <p>🎉 Cảm ơn bạn đã gửi lời nhắn! 🎉</p>
+    <small>Chúc bạn một năm học thật vui và thành công!</small>
   </div>
+
+  <section id="messages" aria-live="polite" aria-label="Danh sách lời nhắn">
+    <!-- Messages appended here -->
+  </section>
+
+  <div id="music-controls">
+    <button id="toggle-music">Tạm dừng nhạc 💖</button>
+  </div>
+  <audio id="background-music" loop preload="auto" >
+    <source src="./12.m4a" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
 </main>
 
-<div class="congrats-frame" id="congrats-frame" role="alert" aria-live="assertive" aria-atomic="true">Lời chúc của bạn đã được gửi! 💖</div>
+<!-- Heart animation container -->
+<div id="hearts-container" style="position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index: 2000;"></div>
 
 <script>
-  // Heart animation on mouse move and click
-  const hearts = [];
-  function createHeart(x, y) {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.style.left = (x - 10) + 'px';
-    heart.style.top = (y - 10) + 'px';
-    document.body.appendChild(heart);
-    hearts.push(heart);
-    setTimeout(() => {
-      heart.remove();
-      hearts.splice(hearts.indexOf(heart), 1);
-    }, 1200);
+(() => {
+  const form = document.getElementById('message-form');
+  const nameInput = document.getElementById('name-input');
+  const classSelect = document.getElementById('class-select');
+  const messageText = document.getElementById('message-text');
+  const fileInput = document.getElementById('file-input');
+  const filePreview = document.getElementById('file-preview');
+  const messagesSection = document.getElementById('messages');
+  const greetingOverlay = document.getElementById('greeting-overlay');
+  const signatureCanvas = document.getElementById('signature-canvas');
+  const clearSignatureBtn = document.getElementById('clear-signature');
+  const saveSignatureBtn = document.getElementById('save-signature');
+  const heartsContainer = document.getElementById('hearts-container');
+  const music = document.getElementById('background-music');
+  const toggleMusicBtn = document.getElementById('toggle-music');
+  const ctx = signatureCanvas.getContext('2d');
+
+  // Signature drawing state
+  let drawing = false;
+  let currentSignatureDataUrl = '';
+
+  // For long press heart animation
+  let longPressTimeout = null;
+
+  // Variables to hold file data for upload
+  let fileDataUrl = '';
+  let fileType = '';
+
+  // Initialize canvas background as transparent
+  ctx.fillStyle = 'rgba(255,255,255,0)';
+  ctx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+
+  // Signature drawing handlers
+  function resizeCanvas() {
+    // Preserve existing drawing on resize if needed (optional)
   }
 
-  document.addEventListener('mousemove', e => {
-    if (Math.random() < 0.04) { // not too many hearts, about 4% chance on mousemove
-      createHeart(e.clientX, e.clientY);
-    }
-  });
-
-  document.addEventListener('click', e => {
-    for(let i=0; i<5; i++) {
-      setTimeout(() => createHeart(e.clientX + (Math.random()*20-10), e.clientY + (Math.random()*20-10)), i * 40);
-    }
-  });
-
-  const form = document.getElementById('message-form');
-  const messagesBoard = document.getElementById('messages-board');
-  const congratsFrame = document.getElementById('congrats-frame');
-
-  const classOrder = [
-    "12 Toán",
-    "12 Lý",
-    "12 Hóa",
-    "12 Văn 1",
-    "12 Văn 2",
-    "12 Sinh"
-  ];
-
-  form.addEventListener('submit', e => {
+  function startDrawing(e) {
     e.preventDefault();
+    drawing = true;
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#b03a5d';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    const pos = getPointerPos(e);
+    ctx.moveTo(pos.x, pos.y);
+  }
 
-    const fullname = form['fullname'].value.trim();
-    const className = form['class-select'].value;
-    const messageText = form['message-text'].value.trim();
-    const mediaFiles = form['media-input'].files;
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPointerPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
 
-    if (!fullname || !className || !messageText) {
-      alert('Vui lòng điền đầy đủ thông tin và lời chúc.');
+  function stopDrawing(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    drawing = false;
+  }
+
+  function getPointerPos(e) {
+    const rect = signatureCanvas.getBoundingClientRect();
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  clearSignatureBtn.onclick = () => {
+    ctx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    currentSignatureDataUrl = '';
+  };
+
+  saveSignatureBtn.onclick = () => {
+    const dataUrl = signatureCanvas.toDataURL('image/png');
+    currentSignatureDataUrl = dataUrl;
+    alert('Chữ ký đã được lưu!');
+  };
+
+  // Handle file input preview & read
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      filePreview.innerHTML = '';
+      fileDataUrl = '';
+      fileType = '';
       return;
     }
+    const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+    const validVideoTypes = ['video/mp4'];
 
-    // Create message card container
-    const card = document.createElement('article');
-    card.className = 'message-card';
-    card.tabIndex = 0;
-    card.dataset.classname = className;
-    card.setAttribute('aria-label', `Lời chúc từ ${fullname} lớp ${className}`);
-   
+    if (![...validImageTypes, ...validVideoTypes].includes(file.type)) {
+      alert('Chỉ hỗ trợ định dạng ảnh (png,jpg,jpeg,gif) và video (mp4)');
+      fileInput.value = '';
+      filePreview.innerHTML = '';
+      fileDataUrl = '';
+      fileType = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      fileDataUrl = reader.result;
+      fileType = file.type;
+      renderFilePreview(fileDataUrl, fileType);
+    };
+    reader.readAsDataURL(file);
+  };
 
-    // Student section
-    const studentSection = document.createElement('section');
-    studentSection.className = 'student-section';
-    const studentHeader = document.createElement('h4');
-    studentHeader.textContent = fullname + ' - ' + className;
-    studentSection.appendChild(studentHeader);
-
-    const studentMsg = document.createElement('p');
-    studentMsg.className = 'message-text';
-    studentMsg.textContent = messageText;
-    studentSection.appendChild(studentMsg);
-  // Thêm chữ ký (nếu có)
-const signatureData = canvas.toDataURL();
-if (signatureData && !signatureIsEmpty()) {
-  const img = document.createElement('img');
-  img.src = signatureData;
-  img.alt = 'Chữ ký';
-  img.style.maxWidth = '200px';
-  img.style.marginTop = '10px';
-  img.className = 'message-media';
-  studentSection.appendChild(img);
-}
-    // Nút xóa
-const deleteBtn = document.createElement('button');
-deleteBtn.textContent = '🗑 Xóa';
-deleteBtn.style.cssText = 'position:absolute; top:10px; right:15px; background:none; border:none; color:#ad1457; font-size:1.2em; cursor:pointer;';
-deleteBtn.title = 'Xóa lời chúc';
-deleteBtn.addEventListener('click', () => {
-  if (confirm('Bạn có chắc muốn xóa lời chúc này không?')) {
-    card.remove();
-    removeMessageFromStorage(fullname, className, messageText);
+  function renderFilePreview(dataUrl, type) {
+    if (type.startsWith('image/')) {
+      filePreview.innerHTML = `<img src="${dataUrl}" alt="Ảnh preview" style="max-width:100%; border-radius:12px;"/>`;
+    } else if (type === 'video/mp4') {
+      filePreview.innerHTML = `<video src="${dataUrl}" controls muted playsinline style="max-width:100%; border-radius:12px;"></video>`;
+    }
   }
-});
-card.appendChild(deleteBtn);
 
-    // Append media to student section
-    if (mediaFiles.length > 0) {
-      for (let file of mediaFiles) {
-        const type = file.type;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (type.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.src = event.target.result;
-            img.alt = 'Ảnh lời chúc';
-            img.className = 'message-media';
-            studentSection.appendChild(img);
-          } else if (type === 'video/mp4') {
-            const video = document.createElement('video');
-            video.controls = true;
-            video.src = event.target.result;
-            video.className = 'message-video';
-            studentSection.appendChild(video);
-          }
-        };
-        reader.readAsDataURL(file);
+  // Load existing saved messages from localStorage
+  function loadMessages() {
+    const saved = localStorage.getItem('yearbookMessages');
+    if (!saved) return;
+    try {
+      const messages = JSON.parse(saved);
+      messages.forEach(msg => {
+        appendMessage(msg, false);
+      });
+    } catch(e) {
+      console.error('Error parsing saved messages', e);
+    }
+  }
+
+  // Save messages to localStorage
+  function saveMessages(messages) {
+    localStorage.setItem('yearbookMessages', JSON.stringify(messages));
+  }
+
+  // Append a message DOM element to the message section
+  function appendMessage(msg, scrollTo = true) {
+    const messageEl = document.createElement('article');
+    messageEl.className = 'message';
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = msg.name || 'Ẩn danh';
+
+    const classNameEl = document.createElement('div');
+    classNameEl.className = 'class-name';
+    classNameEl.textContent = msg.className;
+    meta.appendChild(classNameEl);
+
+    messageEl.appendChild(meta);
+
+    // Message text
+    const textEl = document.createElement('div');
+    textEl.className = 'text';
+    textEl.textContent = msg.text;
+    messageEl.appendChild(textEl);
+
+    // Image or video if any
+    if (msg.fileDataUrl && msg.fileType) {
+      if (msg.fileType.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = msg.fileDataUrl;
+        img.alt = 'Ảnh trong lời nhắn';
+        messageEl.appendChild(img);
+      } else if (msg.fileType === 'video/mp4') {
+        const vid = document.createElement('video');
+        vid.src = msg.fileDataUrl;
+        vid.controls = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.style.maxHeight = '280px';
+        messageEl.appendChild(vid);
       }
     }
 
-    card.appendChild(studentSection);
-
-    // Insert or group by class
-    addMessageToClassGroup(card, className);
-
-    // Show congrats frame with animation
-    congratsFrame.classList.add('show');
-    setTimeout(() => {
-      congratsFrame.classList.remove('show');
-    }, 2500);
-  // Lưu vào localStorage
-const newMessage = {
-  fullname,
-  className,
-  messageText,
-  timestamp: Date.now()
-};
-const existingMessages = JSON.parse(localStorage.getItem('messages') || '[]');
-existingMessages.push(newMessage);
-localStorage.setItem('messages', JSON.stringify(existingMessages));
-    form.reset();
-    newMessage.signature = signatureIsEmpty() ? null : signatureData;
-  });
-
-  /**
-   * Adds the given message card to the group for the className.
-   * Creates the group container if it doesn't exist.
-   * Ensures classes appear in order as in classOrder array.
-   */
-  function addMessageToClassGroup(card, className) {
-    // Find or create container for class
-    let classGroup = messagesBoard.querySelector(`section.class-group[data-class="${className}"]`);
-    if (!classGroup) {
-      classGroup = document.createElement('section');
-      classGroup.className = 'class-group';
-      classGroup.dataset.class = className;
-
-      const heading = document.createElement('h3');
-      heading.textContent = className;
-      classGroup.appendChild(heading);
-
-      // Insert group in correct order
-      const existingGroups = Array.from(messagesBoard.querySelectorAll('section.class-group'));
-      let inserted = false;
-      for (let i = 0; i < existingGroups.length; i++) {
-        const existingClass = existingGroups[i].dataset.class;
-        if (classOrder.indexOf(className) < classOrder.indexOf(existingClass)) {
-          messagesBoard.insertBefore(classGroup, existingGroups[i]);
-          inserted = true;
-          break;
-        }
-      }
-      if (!inserted) messagesBoard.appendChild(classGroup);
+    // Signature if any
+    if (msg.signatureDataUrl) {
+      const sigDiv = document.createElement('div');
+      sigDiv.className = 'signature';
+      const sigImg = document.createElement('img');
+      sigImg.src = msg.signatureDataUrl;
+      sigImg.alt = 'Chữ ký';
+      sigDiv.appendChild(sigImg);
+      messageEl.appendChild(sigDiv);
     }
 
-    // Insert card at top (newest first)
-    classGroup.insertBefore(card, classGroup.children[1] || null); // after heading
+    messagesSection.appendChild(messageEl);
+    if(scrollTo) {
+      messageEl.scrollIntoView({behavior: 'smooth'});
+    }
   }
-  // Hàm load lại lời chúc từ localStorage
-window.addEventListener('DOMContentLoaded', () => {
-  const savedMessages = JSON.parse(localStorage.getItem('messages') || '[]');
-  savedMessages.sort((a, b) => b.timestamp - a.timestamp); // Mới nhất lên trước
-  for (let msg of savedMessages) {
-    const card = document.createElement('article');
-    card.className = 'message-card';
-    card.tabIndex = 0;
-    card.dataset.classname = msg.className;
-    card.setAttribute('aria-label', `Lời chúc từ ${msg.fullname} lớp ${msg.className}`);
 
-    const studentSection = document.createElement('section');
-    studentSection.className = 'student-section';
-    const studentHeader = document.createElement('h4');
-    studentHeader.textContent = msg.fullname + ' - ' + msg.className;
-    studentSection.appendChild(studentHeader);
+  // Heart animation function
+  function createHeart(x, y) {
+    const heart = document.createElement('div');
+    heart.textContent = '❤️';
+    const size = Math.random() * 20 + 15;
+    heart.style.position = 'absolute';
+    heart.style.left = x - size/2 + 'px';
+    heart.style.top = y - size/2 + 'px';
+    heart.style.fontSize = size + 'px';
+    heart.style.pointerEvents = 'none';
+    heart.style.userSelect = 'none';
+    heart.style.opacity = '1';
+    heart.style.transition = 'transform 1s ease, opacity 1s ease';
+    heartsContainer.appendChild(heart);
 
-    const studentMsg = document.createElement('p');
-    studentMsg.className = 'message-text';
-    studentMsg.textContent = msg.messageText;
-    studentSection.appendChild(studentMsg);
-
-    card.appendChild(studentSection);
-    addMessageToClassGroup(card, msg.className);
-  }
-});
-function removeMessageFromStorage(fullname, className, messageText) {
-  const stored = JSON.parse(localStorage.getItem('messages') || '[]');
-  const updated = stored.filter(msg => {
-    return !(msg.fullname === fullname && msg.className === className && msg.messageText === messageText);
-  });
-  localStorage.setItem('messages', JSON.stringify(updated));
-}
-document.addEventListener('click', () => {
-  const audio = document.getElementById('background-audio');
-  if (audio && audio.paused) {
-    audio.play().catch(e => {
-      console.warn("Không thể phát nhạc tự động:", e);
+    requestAnimationFrame(() => {
+      heart.style.transform = 'translateY(-80px) scale(1.5)';
+      heart.style.opacity = '0';
     });
+
+    setTimeout(() => {
+      heartsContainer.removeChild(heart);
+    }, 1000);
   }
-}, { once: true });
-const canvas = document.getElementById('signature-pad');
-const ctx = canvas.getContext('2d');
-let drawing = false;
 
-canvas.addEventListener('mousedown', e => {
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
-});
-canvas.addEventListener('mousemove', e => {
-  if (!drawing) return;
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.strokeStyle = '#ad1457';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-});
-canvas.addEventListener('mouseup', () => drawing = false);
-canvas.addEventListener('mouseleave', () => drawing = false);
+  // Mouse event handlers for heart animation
+  document.body.addEventListener('mousemove', e => {
+    createHeart(e.clientX, e.clientY);
+  });
 
-// Touch support
-canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  ctx.beginPath();
-  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-  drawing = true;
-});
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  if (!drawing) return;
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
-  ctx.strokeStyle = '#ad1457';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-});
-canvas.addEventListener('touchend', () => drawing = false);
+  document.body.addEventListener('click', e => {
+    createHeart(e.clientX, e.clientY);
+  });
 
-// Xóa chữ ký
-document.getElementById('clear-signature').addEventListener('click', () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-function signatureIsEmpty() {
-  const blank = document.createElement('canvas');
-  blank.width = canvas.width;
-  blank.height = canvas.height;
-  return canvas.toDataURL() === blank.toDataURL();
-}
-if (msg.signature) {
-  const sig = document.createElement('img');
-  sig.src = msg.signature;
-  sig.alt = 'Chữ ký';
-  sig.style.maxWidth = '200px';
-  sig.className = 'message-media';
-  studentSection.appendChild(sig);
-}
+  // Long press detection to create continuous hearts
+  let longPressInterval = null;
+
+  document.body.addEventListener('mousedown', e => {
+    longPressTimeout = setTimeout(() => {
+      longPressInterval = setInterval(() => {
+        createHeart(e.clientX + (Math.random()*20-10), e.clientY + (Math.random()*20-10));
+      }, 100);
+    }, 500);
+  });
+  document.body.addEventListener('mouseup', e => {
+    clearTimeout(longPressTimeout);
+    if (longPressInterval) {
+      clearInterval(longPressInterval);
+      longPressInterval = null;
+    }
+  });
+  document.body.addEventListener('mouseleave', e => {
+    clearTimeout(longPressTimeout);
+    if (longPressInterval) {
+      clearInterval(longPressInterval);
+      longPressInterval = null;
+    }
+  });
+
+  // Form submit
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    // Validate
+    if(!nameInput.value.trim() || !classSelect.value || !messageText.value.trim()) {
+      alert('Vui lòng điền đầy đủ họ tên, chọn lớp và viết lời nhắn!');
+      return;
+    }
+    // Prepare message object
+    const newMsg = {
+      name: nameInput.value.trim(),
+      className: classSelect.value,
+      text: messageText.value.trim(),
+      fileDataUrl: fileDataUrl || '',
+      fileType: fileType || '',
+      signatureDataUrl: currentSignatureDataUrl || ''
+    };
+
+    appendMessage(newMsg);
+
+    // Save to localStorage
+    const saved = localStorage.getItem('yearbookMessages');
+    const msgs = saved ? JSON.parse(saved) : [];
+    msgs.push(newMsg);
+    saveMessages(msgs);
+
+    // Clear form
+    form.reset();
+    filePreview.innerHTML = '';
+    fileDataUrl = '';
+    fileType = '';
+    ctx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    currentSignatureDataUrl = '';
+
+    // Show greeting overlay
+    greetingOverlay.classList.add('active');
+  });
+
+  // Close greeting overlay on click
+  greetingOverlay.addEventListener('click', () => {
+    greetingOverlay.classList.remove('active');
+  });
+
+  // Signature canvas events
+  signatureCanvas.addEventListener('mousedown', startDrawing);
+  signatureCanvas.addEventListener('touchstart', startDrawing);
+  signatureCanvas.addEventListener('mousemove', draw);
+  signatureCanvas.addEventListener('touchmove', draw);
+  signatureCanvas.addEventListener('mouseup', stopDrawing);
+  signatureCanvas.addEventListener('mouseleave', stopDrawing);
+  signatureCanvas.addEventListener('touchend', stopDrawing);
+  signatureCanvas.addEventListener('touchcancel', stopDrawing);
+
+  // Background music control
+  toggleMusicBtn.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+      toggleMusicBtn.textContent = 'Tạm dừng nhạc 💖';
+    } else {
+      music.pause();
+      toggleMusicBtn.textContent = 'Phát nhạc 🎵';
+    }
+  });
+
+  // Autoplay music (some browsers allow with user interaction)
+  window.addEventListener('load', () => {
+    music.play().catch(() => {
+      toggleMusicBtn.textContent = 'Phát nhạc 🎵';
+    });
+  });
+
+  // Load existing messages on start
+  loadMessages();
+})();
 </script>
 </body>
 </html>
+
