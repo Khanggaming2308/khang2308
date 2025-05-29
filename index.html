@@ -135,6 +135,7 @@
   .message .text {
     white-space: pre-wrap;
     margin-top: 0.5rem;
+    text-align: center;
   }
   .message img,
   .message video {
@@ -309,7 +310,7 @@
     </label>
     <label style="flex-basis: 100%;">
       Lời nhắn:
-      <textarea id="message-text" placeholder="Viết lời nhắn của bạn ở đây..." required maxlength="400" ></textarea>
+      <textarea id="message-text" placeholder="Viết lời nhắn của bạn ở đây..." required maxlength="400"></textarea>
     </label>
 
     <label style="flex-basis: 100%;">
@@ -383,10 +384,6 @@
   ctx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
 
   // Signature drawing handlers
-  function resizeCanvas() {
-    // Preserve existing drawing on resize if needed (optional)
-  }
-
   function startDrawing(e) {
     e.preventDefault();
     drawing = true;
@@ -471,24 +468,78 @@
 
   function renderFilePreview(dataUrl, type) {
     if (type.startsWith('image/')) {
-      filePreview.innerHTML = `<img src="${dataUrl}" alt="Ảnh preview" style="max-width:100%; border-radius:12px;"/>`;
+      filePreview.innerHTML = `<img src="\${dataUrl}" alt="Ảnh preview" style="max-width:100%; border-radius:12px;"/>`;
     } else if (type === 'video/mp4') {
-      filePreview.innerHTML = `<video src="${dataUrl}" controls muted playsinline style="max-width:100%; border-radius:12px;"></video>`;
+      filePreview.innerHTML = `<video src="\${dataUrl}" controls muted playsinline style="max-width:100%; border-radius:12px;"></video>`;
     }
   }
 
-  // Load existing saved messages from localStorage
-  function loadMessages() {
-    const saved = localStorage.getItem('yearbookMessages');
-    if (!saved) return;
+  // Serialize messages array to string for URL (Base64 encoded)
+  function encodeMessagesForURL(messages) {
     try {
-      const messages = JSON.parse(saved);
-      messages.forEach(msg => {
-        appendMessage(msg, false);
-      });
+      const str = JSON.stringify(messages);
+      // encode URI component then base64 to keep URL-safe
+      const uriEncoded = encodeURIComponent(str);
+      return btoa(uriEncoded);
+    } catch(e) {
+      console.error('Failed to encode messages for URL:', e);
+      return '';
+    }
+  }
+
+  // Decode messages from URL
+  function decodeMessagesFromURL(encoded) {
+    try {
+      const uriDecoded = atob(encoded);
+      const str = decodeURIComponent(uriDecoded);
+      return JSON.parse(str);
+    } catch(e) {
+      console.error('Failed to decode messages from URL:', e);
+      return null;
+    }
+  }
+
+  // Update URL hash with current messages data
+  function updateURLHash(messages) {
+    const encoded = encodeMessagesForURL(messages);
+    if (encoded) {
+      // Limit URL length to ~1900 chars to avoid errors; if too long, trim messages array
+      let toEncodeMessages = messages;
+      let enc = encoded;
+      while (enc.length > 1900 && toEncodeMessages.length > 1) {
+        toEncodeMessages = toEncodeMessages.slice(1); // remove oldest messages
+        enc = encodeMessagesForURL(toEncodeMessages);
+      }
+      // Update URL hash
+      history.replaceState(null, '', '#' + enc);
+    }
+  }
+
+  // Load messages from URL hash if present
+  function loadMessagesFromURL() {
+    const hash = location.hash.slice(1);
+    if (!hash) return null;
+    const decodedMessages = decodeMessagesFromURL(hash);
+    if (Array.isArray(decodedMessages)) return decodedMessages;
+    return null;
+  }
+
+  // Load messages from localStorage fallback
+  function loadMessagesFromStorage() {
+    const saved = localStorage.getItem('yearbookMessages');
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
     } catch(e) {
       console.error('Error parsing saved messages', e);
+      return [];
     }
+  }
+
+  // Render messages array to DOM
+  function renderMessages(messages) {
+    messagesSection.innerHTML = '';
+    messages.forEach(msg => appendMessage(msg, false));
   }
 
   // Save messages to localStorage
@@ -630,13 +681,21 @@
       signatureDataUrl: currentSignatureDataUrl || ''
     };
 
-    appendMessage(newMsg);
+    // Current messages from URL or storage
+    let currentMessages = loadMessagesFromURL();
+    if (!currentMessages || currentMessages.length === 0) {
+      currentMessages = loadMessagesFromStorage();
+    }
+    currentMessages.push(newMsg);
 
-    // Save to localStorage
-    const saved = localStorage.getItem('yearbookMessages');
-    const msgs = saved ? JSON.parse(saved) : [];
-    msgs.push(newMsg);
-    saveMessages(msgs);
+    // Save messages to localStorage
+    saveMessages(currentMessages);
+
+    // Update URL hash for shareable link
+    updateURLHash(currentMessages);
+
+    // Append message visually
+    appendMessage(newMsg);
 
     // Clear form
     form.reset();
@@ -678,15 +737,19 @@
 
   // Autoplay music (some browsers allow with user interaction)
   window.addEventListener('load', () => {
+    // Load messages from URL if present, else localStorage
+    let initialMessages = loadMessagesFromURL();
+    if (!initialMessages) {
+      initialMessages = loadMessagesFromStorage();
+    }
+    if (initialMessages) {
+      renderMessages(initialMessages);
+    }
     music.play().catch(() => {
       toggleMusicBtn.textContent = 'Phát nhạc 🎵';
     });
   });
-
-  // Load existing messages on start
-  loadMessages();
 })();
 </script>
 </body>
 </html>
-
