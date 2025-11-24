@@ -1,0 +1,27 @@
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.btn-excel {
+    background: #1e7e34;
+    color: white;
+    border: none;
+}
+.btn-excel:hover {
+    background: #166534;
+    color: white;
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.alert {
+    border-radius: 10px;
+}
